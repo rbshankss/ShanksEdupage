@@ -12,7 +12,7 @@ function App() {
         onClick={() => setShowContactForm(true)}
       >
         Contact
-      </button>
+      </button> 
 
       <div className="container">
         {/* Header Section */}
