@@ -1,9 +1,18 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(req) {
   try {
+    const apiKey = process.env.RESEND_API_KEY;
+    
+    if (!apiKey) {
+      console.error('RESEND_API_KEY is missing');
+      return new Response(JSON.stringify({ error: 'Server configuration error' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const resend = new Resend(apiKey);
     const { name, email, number, yearLevel, subjects } = await req.json();
 
     if (!email || !name) {
@@ -15,7 +24,7 @@ export async function POST(req) {
 
     // 1. Send automated response to the user
     const userEmail = await resend.emails.send({
-      from: 'Shanks Education <onboarding@resend.dev>', // You should verify your domain in Resend for a custom address
+      from: 'Shanks Education <onboarding@resend.dev>',
       to: [email],
       subject: 'Thanks for reaching out! - Shanks Education',
       html: `
@@ -23,7 +32,7 @@ export async function POST(req) {
           <h2 style="color: #dc2626; margin-bottom: 20px;">Hi ${name},</h2>
           <p style="font-size: 16px; line-height: 1.5; color: #333;">Thanks for reaching out to us! We've received your information and inquiry regarding tutoring.</p>
           <p style="font-size: 16px; line-height: 1.5; color: #333;">We will review your details and <strong>get back to you as soon as possible</strong> to discuss how we can help you achieve your goals.</p>
-
+          
           <div style="margin: 30px 0; padding: 15px; background-color: #fff; border-left: 4px solid #dc2626; font-style: italic;">
             "Hard Work Determines Results"
           </div>
@@ -37,10 +46,10 @@ export async function POST(req) {
 
     console.log('User email response:', userEmail);
 
-    // 2. Send a notification to yourself so you know someone contacted you
+    // 2. Send a notification to yourself
     const adminEmail = await resend.emails.send({
       from: 'Shanks Education System <onboarding@resend.dev>',
-      to: ['shanks.education.au@gmail.com'], // Using the email found in your footer
+      to: ['shanks.education.au@gmail.com'],
       subject: `New Lead: ${name} (${yearLevel})`,
       html: `
         <div style="font-family: sans-serif; padding: 20px;">
