@@ -24,7 +24,7 @@ export async function POST(req) {
 
     // 1. Send automated response to the user
     const userEmail = await resend.emails.send({
-      from: 'Shanks Education <onboarding@resend.dev>',
+      from: 'Shanks Education <contact@shanks-education.com>',
       to: [email],
       subject: 'Thanks for reaching out! - Shanks Education',
       html: `
@@ -48,7 +48,7 @@ export async function POST(req) {
 
     // 2. Send a notification to yourself
     const adminEmail = await resend.emails.send({
-      from: 'Shanks Education System <onboarding@resend.dev>',
+      from: 'Shanks Education System <system@shanks-education.com>',
       to: ['shanks.education.au@gmail.com'],
       subject: `New Lead: ${name} (${yearLevel})`,
       html: `
