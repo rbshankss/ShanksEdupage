@@ -1,117 +1,303 @@
-import React, { useState } from 'react'
-import './ContactForm.css'
+'use client';
 
-function ContactForm({ onClose }) {
+import React, { useState } from 'react';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
+
+const YEAR_LEVELS = [
+  'Select year level',
+  'Years 7-10',
+  'VCE',
+  'University 1st Year',
+  'University 2nd Year',
+];
+
+export default function ContactForm({ onClose }) {
   const [formData, setFormData] = useState({
     name: '',
     number: '',
     email: '',
     yearLevel: '',
-    subjects: ''
-  })
+    subjects: '',
+  });
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // Here you would typically send the data to a server
-    console.log('Form submitted:', formData)
-    alert('Thank you for your interest! We will contact you soon.')
-    onClose()
-  }
+  const handleSubmit = async () => {
+    // Simple validation
+    if (!formData.name || !formData.number || !formData.email || !formData.yearLevel || !formData.subjects) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert('Thank you for your interest! We have sent a confirmation email to you and will contact you soon.');
+        onClose();
+      } else {
+        throw new Error(result.error || 'Failed to send message');
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      alert('Sorry, there was an error sending your message. Please try again or contact us directly.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose}>×</button>
-        <h2 className="modal-title">Contact Us</h2>
-        <form onSubmit={handleSubmit} className="contact-form">
-          <div className="form-group">
-            <label htmlFor="name">Name *</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
+    <View style={styles.modalOverlay}>
+      <View style={styles.modalContent}>
+        <TouchableOpacity style={styles.modalClose} onPress={onClose} disabled={isSubmitting}>
+          <Text style={styles.modalCloseText}>×</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.modalTitle}>Contact Us</Text>
+
+        <ScrollView style={styles.formScroll}>
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Name *</Text>
+            <TextInput
+              style={styles.input}
               value={formData.name}
-              onChange={handleChange}
-              required
+              onChangeText={(text) => setFormData({ ...formData, name: text })}
               placeholder="Enter your name"
+              placeholderTextColor="#888"
+              editable={!isSubmitting}
             />
-          </div>
+          </View>
 
-          <div className="form-group">
-            <label htmlFor="number">Phone Number *</label>
-            <input
-              type="tel"
-              id="number"
-              name="number"
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Phone Number *</Text>
+            <TextInput
+              style={styles.input}
               value={formData.number}
-              onChange={handleChange}
-              required
+              onChangeText={(text) => setFormData({ ...formData, number: text })}
               placeholder="Enter your phone number"
+              placeholderTextColor="#888"
+              keyboardType="phone-pad"
+              editable={!isSubmitting}
             />
-          </div>
+          </View>
 
-          <div className="form-group">
-            <label htmlFor="email">Email *</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Email *</Text>
+            <TextInput
+              style={styles.input}
               value={formData.email}
-              onChange={handleChange}
-              required
+              onChangeText={(text) => setFormData({ ...formData, email: text })}
               placeholder="Enter your email"
+              placeholderTextColor="#888"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              editable={!isSubmitting}
             />
-          </div>
+          </View>
 
-          <div className="form-group">
-            <label htmlFor="yearLevel">Year Level *</label>
-            <select
-              id="yearLevel"
-              name="yearLevel"
-              value={formData.yearLevel}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select year level</option>
-              <option value="Year 7-10">Years 7-10</option>
-              <option value="VCE">VCE</option>
-              <option value="University 1st Year">University 1st Year</option>
-              <option value="University 2nd Year">University 2nd Year</option>
-            </select>
-          </div>
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Year Level *</Text>
+            <View style={styles.yearLevelContainer}>
+              {YEAR_LEVELS.slice(1).map((level) => (
+                <TouchableOpacity
+                  key={level}
+                  disabled={isSubmitting}
+                  style={[
+                    styles.yearLevelButton,
+                    formData.yearLevel === level && styles.yearLevelButtonSelected,
+                  ]}
+                  onPress={() => setFormData({ ...formData, yearLevel: level })}
+                >
+                  <Text
+                    style={[
+                      styles.yearLevelText,
+                      formData.yearLevel === level && styles.yearLevelTextSelected,
+                    ]}
+                  >
+                    {level}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
 
-          <div className="form-group">
-            <label htmlFor="subjects">Subjects of Interest *</label>
-            <textarea
-              id="subjects"
-              name="subjects"
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Subjects of Interest *</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
               value={formData.subjects}
-              onChange={handleChange}
-              required
+              onChangeText={(text) => setFormData({ ...formData, subjects: text })}
               placeholder="e.g., Maths, Physics, Chemistry"
-              rows="4"
+              placeholderTextColor="#888"
+              multiline={true}
+              numberOfLines={4}
+              editable={!isSubmitting}
             />
-          </div>
+          </View>
 
-          <div className="form-actions">
-            <button type="button" className="btn-cancel" onClick={onClose}>
-              Cancel
-            </button>
-            <button type="submit" className="btn-submit">
-              Submit
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  )
+          <View style={styles.formActions}>
+            <TouchableOpacity
+              style={styles.btnCancel}
+              onPress={onClose}
+              disabled={isSubmitting}
+            >
+              <Text style={styles.btnText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.btnSubmit, isSubmitting && { opacity: 0.7 }]}
+              onPress={handleSubmit}
+              disabled={isSubmitting}
+            >
+              <Text style={styles.btnText}>
+                {isSubmitting ? 'Sending...' : 'Submit'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </View>
+    </View>
+  );
 }
 
-export default ContactForm
+const styles = StyleSheet.create({
+  modalOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    zIndex: 9999,
+  },
+  modalContent: {
+    backgroundColor: '#2d2d2d',
+    borderWidth: 2,
+    borderColor: '#dc2626',
+    borderRadius: 10,
+    padding: 40,
+    maxWidth: 540,
+    width: '100%',
+    maxHeight: '90%',
+    position: 'relative',
+    elevation: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.5,
+    shadowRadius: 40,
+  },
+  modalClose: {
+    position: 'absolute',
+    top: 15,
+    right: 20,
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
+  },
+  modalCloseText: {
+    color: '#fff',
+    fontSize: 32,
+    lineHeight: 32,
+  },
+  modalTitle: {
+    color: '#fff',
+    fontSize: 30,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    textAlign: 'center',
+    letterSpacing: 0.5,
+  },
+  formScroll: {
+    width: '100%',
+  },
+  formGroup: {
+    marginBottom: 24,
+  },
+  label: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 10,
+  },
+  input: {
+    backgroundColor: '#1a1a1a',
+    borderWidth: 2,
+    borderColor: '#555',
+    borderRadius: 6,
+    padding: 14,
+    color: '#fff',
+    fontSize: 16,
+  },
+  textArea: {
+    minHeight: 100,
+    textAlignVertical: 'top',
+  },
+  yearLevelContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  yearLevelButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#555',
+    backgroundColor: '#1a1a1a',
+  },
+  yearLevelButtonSelected: {
+    borderColor: '#dc2626',
+    backgroundColor: '#dc2626',
+  },
+  yearLevelText: {
+    color: '#fff',
+    fontSize: 14,
+  },
+  yearLevelTextSelected: {
+    fontWeight: 'bold',
+  },
+  formActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 16,
+    marginTop: 10,
+  },
+  btnCancel: {
+    backgroundColor: '#555',
+    paddingVertical: 14,
+    paddingHorizontal: 28,
+    borderRadius: 6,
+  },
+  btnSubmit: {
+    backgroundColor: '#dc2626',
+    paddingVertical: 14,
+    paddingHorizontal: 28,
+    borderRadius: 6,
+  },
+  btnText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+});
