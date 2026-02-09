@@ -9,34 +9,41 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
-  Dimensions,
+  useWindowDimensions,
 } from 'react-native';
 import ContactForm from '../components/ContactForm';
 
 export default function Page() {
   const [showContactForm, setShowContactForm] = useState(false);
+  const { width } = useWindowDimensions();
+  
+  const isMobile = width < 768;
+  const isTablet = width >= 768 && width < 1024;
+  const isDesktop = width >= 1024;
 
   return (
     <SafeAreaView style={styles.app}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <TouchableOpacity
-          style={styles.contactButton}
+          style={[styles.contactButton, isMobile && styles.contactButtonMobile]}
           onPress={() => setShowContactForm(true)}
         >
-          <Text style={styles.contactButtonText}>Contact</Text>
+          <Text style={[styles.contactButtonText, isMobile && styles.contactButtonTextMobile]}>
+            Contact
+          </Text>
         </TouchableOpacity>
 
         <View style={styles.container}>
           {/* Header Section */}
-          <View style={styles.header}>
+          <View style={[styles.header, (isMobile || isTablet) && styles.headerMobile]}>
             <View style={styles.logoSection}>
-              <View style={styles.logo}>
-                <Text style={styles.logoShanks}>SHANKS</Text>
-                <Text style={styles.logoEducation}>EDUCATION</Text>
+              <View style={[styles.logo, (isMobile || isTablet) && styles.logoMobile]}>
+                <Text style={[styles.logoShanks, (isMobile || isTablet) && styles.logoShanksMobile]}>SHANKS</Text>
+                <Text style={[styles.logoEducation, (isMobile || isTablet) && styles.logoEducationMobile]}>EDUCATION</Text>
               </View>
-              <Text style={styles.tagline}>Hard Work Determines Results</Text>
+              <Text style={[styles.tagline, (isMobile || isTablet) && styles.taglineMobile]}>Hard Work Determines Results</Text>
             </View>
-            <View style={styles.tutorImageContainer}>
+            <View style={[styles.tutorImageContainer, (isMobile || isTablet) && styles.tutorImageContainerMobile]}>
               <Image
                 source={{ uri: '/images/tutor.jpg' }}
                 style={styles.tutorImage}
@@ -46,45 +53,45 @@ export default function Page() {
           </View>
 
           {/* Diagonal Overlay Section */}
-          <View style={styles.diagonalSection}>
-            <View style={styles.diagonalOverlay} />
+          <View style={[styles.diagonalSection, (isMobile || isTablet) && styles.diagonalSectionMobile]}>
+            <View style={[styles.diagonalOverlay, (isMobile || isTablet) && { height: 700 }]} />
 
             {/* Services Header */}
             <View style={styles.servicesHeader}>
-              <View style={styles.servicesHeaderBox}>
-                <Text style={styles.servicesHeaderText}>SERVICES INCLUDE</Text>
+              <View style={[styles.servicesHeaderBox, (isMobile || isTablet) && styles.servicesHeaderBoxMobile]}>
+                <Text style={[styles.servicesHeaderText, (isMobile || isTablet) && styles.servicesHeaderTextMobile]}>SERVICES INCLUDE</Text>
               </View>
             </View>
 
             {/* Main Content Grid */}
-            <View style={styles.mainContent}>
-              <View style={styles.column}>
+            <View style={[styles.mainContent, (isMobile || isTablet) && styles.mainContentVertical]}>
+              <View style={[styles.column, (isMobile || isTablet) && { alignItems: 'center' }]}>
                 <View style={styles.subjectsSection}>
-                  <Text style={styles.subjectsTitle}>Subjects Taught:</Text>
-                  <Text style={styles.subjectItem}>• Uni 1st and 2nd Year Maths</Text>
-                  <Text style={styles.subjectItem}>• VCE Methods, Spec, Physics</Text>
-                  <Text style={styles.subjectItem}>• Years 7-10 Maths and Science</Text>
+                  <Text style={[styles.subjectsTitle, (isMobile || isTablet) && { textAlign: 'center' }]}>Subjects Taught:</Text>
+                  <Text style={[styles.subjectItem, (isMobile || isTablet) && { textAlign: 'center' }]}>• Uni 1st and 2nd Year Maths</Text>
+                  <Text style={[styles.subjectItem, (isMobile || isTablet) && { textAlign: 'center' }]}>• VCE Methods, Spec, Physics</Text>
+                  <Text style={[styles.subjectItem, (isMobile || isTablet) && { textAlign: 'center' }]}>• Years 7-10 Maths and Science</Text>
                 </View>
               </View>
 
-              <View style={styles.column}>
-                <View style={styles.servicesList}>
-                  <Text style={styles.serviceItem}>TAILORED LESSONS</Text>
-                  <Text style={styles.serviceItem}>CONCEPT MASTERY</Text>
-                  <Text style={styles.serviceItem}>LEARNING STRATEGIES</Text>
+              <View style={[styles.column, isDesktop && { alignItems: 'flex-end' }, (isMobile || isTablet) && { alignItems: 'center' }]}>
+                <View style={[styles.servicesList, isDesktop && { alignItems: 'flex-end' }, (isMobile || isTablet) && { alignItems: 'center' }]}>
+                  <Text style={[styles.serviceItem, isDesktop && { textAlign: 'right' }, (isMobile || isTablet) && { textAlign: 'center' }]}>TAILORED LESSONS</Text>
+                  <Text style={[styles.serviceItem, isDesktop && { textAlign: 'right' }, (isMobile || isTablet) && { textAlign: 'center' }]}>CONCEPT MASTERY</Text>
+                  <Text style={[styles.serviceItem, isDesktop && { textAlign: 'right' }, (isMobile || isTablet) && { textAlign: 'center' }]}>LEARNING STRATEGIES</Text>
                 </View>
               </View>
             </View>
 
             {/* Motivational Text */}
             <View style={styles.motivational}>
-              <Text style={styles.motivationalText}>Effort over Excuses</Text>
-              <Text style={styles.motivationalText}>Discipline over Talent</Text>
+              <Text style={[styles.motivationalText, (isMobile || isTablet) && styles.motivationalTextMobile]}>Effort over Excuses</Text>
+              <Text style={[styles.motivationalText, (isMobile || isTablet) && styles.motivationalTextMobile]}>Discipline over Talent</Text>
             </View>
           </View>
 
           {/* Bottom Section */}
-          <View style={styles.bottomSection}>
+          <View style={[styles.bottomSection, (isMobile || isTablet) && styles.bottomSectionVertical]}>
             <View style={styles.sectionColumn}>
               <Text style={styles.sectionTitle}>My Mission</Text>
               <Text style={styles.missionText}>
@@ -99,7 +106,7 @@ export default function Page() {
             </View>
 
             <View style={styles.sectionColumn}>
-              <Text style={styles.sectionTitle}>About Me</Text>
+              <Text style={[styles.sectionTitle, (isMobile || isTablet) && { marginTop: 40 }]}>About Me</Text>
               <View style={styles.aboutList}>
                 {[
                   'Biomedical Engineering Student at Monash',
@@ -117,20 +124,20 @@ export default function Page() {
           </View>
 
           {/* CTA Button Section */}
-          <View style={styles.ctaSection}>
+          <View style={[styles.ctaSection, (isMobile || isTablet) && styles.ctaSectionMobile]}>
             <TouchableOpacity
-              style={styles.ctaButton}
+              style={[styles.ctaButton, (isMobile || isTablet) && styles.ctaButtonMobile]}
               onPress={() => setShowContactForm(true)}
             >
-              <Text style={styles.ctaButtonText}>
+              <Text style={[styles.ctaButtonText, (isMobile || isTablet) && styles.ctaButtonTextMobile]}>
                 Start Your learning journey At Shanks Education
               </Text>
             </TouchableOpacity>
           </View>
 
           {/* Contact Footer */}
-          <View style={styles.contactFooter}>
-            <View style={styles.contactInfo}>
+          <View style={[styles.contactFooter, (isMobile || isTablet) && styles.contactFooterMobile]}>
+            <View style={[styles.contactInfo, (isMobile || isTablet) && styles.contactInfoMobile]}>
               <View style={styles.contactItem}>
                 <Text style={styles.contactIcon}>📞</Text>
                 <Text style={styles.contactText}>0435 626 232</Text>
@@ -179,10 +186,19 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 12,
   },
+  contactButtonMobile: {
+    top: 16,
+    right: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
   contactButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  contactButtonTextMobile: {
+    fontSize: 14,
   },
   container: {
     flex: 1,
@@ -200,6 +216,13 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: '100%',
   },
+  headerMobile: {
+    flexDirection: 'column',
+    paddingHorizontal: 30,
+    paddingTop: 80,
+    alignItems: 'center',
+    textAlign: 'center',
+  },
   logoSection: {
     flex: 1,
   },
@@ -207,6 +230,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
+  },
+  logoMobile: {
+    flexDirection: 'column',
+    gap: 10,
   },
   logoShanks: {
     fontSize: 52,
@@ -217,6 +244,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginRight: 10,
     letterSpacing: 2,
+    textAlign: 'center',
+  },
+  logoShanksMobile: {
+    fontSize: 36,
+    marginRight: 0,
   },
   logoEducation: {
     fontSize: 52,
@@ -226,6 +258,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     letterSpacing: 2,
+    textAlign: 'center',
+  },
+  logoEducationMobile: {
+    fontSize: 36,
   },
   tagline: {
     color: '#fff',
@@ -234,11 +270,21 @@ const styles = StyleSheet.create({
     fontWeight: '300',
     letterSpacing: 0.5,
   },
+  taglineMobile: {
+    textAlign: 'center',
+    fontSize: 16,
+  },
   tutorImageContainer: {
     width: 220,
     height: 220,
     borderRadius: 110,
     overflow: 'hidden',
+  },
+  tutorImageContainerMobile: {
+    width: 180,
+    height: 180,
+    marginTop: 30,
+    alignSelf: 'center',
   },
   tutorImage: {
     width: '100%',
@@ -253,6 +299,10 @@ const styles = StyleSheet.create({
     maxWidth: 1400,
     alignSelf: 'center',
     width: '100%',
+  },
+  diagonalSectionMobile: {
+    paddingHorizontal: 30,
+    marginTop: 20,
   },
   diagonalOverlay: {
     position: 'absolute',
@@ -275,16 +325,28 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 40,
   },
+  servicesHeaderBoxMobile: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
   servicesHeaderText: {
     color: '#fff',
     fontSize: 19,
     fontWeight: 'bold',
     letterSpacing: 2.5,
   },
+  servicesHeaderTextMobile: {
+    fontSize: 16,
+    letterSpacing: 1.5,
+  },
   mainContent: {
     zIndex: 10,
     flexDirection: 'row',
     gap: 80,
+  },
+  mainContentVertical: {
+    flexDirection: 'column',
+    gap: 40,
   },
   column: {
     flex: 1,
@@ -331,6 +393,9 @@ const styles = StyleSheet.create({
     lineHeight: 39,
     textAlign: 'center',
   },
+  motivationalTextMobile: {
+    fontSize: 24,
+  },
   bottomSection: {
     zIndex: 10,
     flexDirection: 'row',
@@ -340,6 +405,11 @@ const styles = StyleSheet.create({
     maxWidth: 1400,
     alignSelf: 'center',
     width: '100%',
+  },
+  bottomSectionVertical: {
+    flexDirection: 'column',
+    padding: 30,
+    gap: 0,
   },
   sectionColumn: {
     flex: 1,
@@ -380,6 +450,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: '100%',
   },
+  ctaSectionMobile: {
+    paddingHorizontal: 30,
+    paddingVertical: 40,
+  },
   ctaButton: {
     backgroundColor: '#dc2626',
     paddingVertical: 20,
@@ -391,6 +465,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 20,
   },
+  ctaButtonMobile: {
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    width: '100%',
+  },
   ctaButtonText: {
     color: '#fff',
     fontSize: 22,
@@ -399,12 +478,19 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     textAlign: 'center',
   },
+  ctaButtonTextMobile: {
+    fontSize: 16,
+  },
   contactFooter: {
     zIndex: 10,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
     paddingVertical: 50,
     paddingHorizontal: 80,
     marginTop: 60,
+  },
+  contactFooterMobile: {
+    paddingHorizontal: 30,
+    paddingVertical: 40,
   },
   contactInfo: {
     flexDirection: 'row',
@@ -413,6 +499,11 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     maxWidth: 1200,
     alignSelf: 'center',
+  },
+  contactInfoMobile: {
+    flexDirection: 'column',
+    gap: 20,
+    alignItems: 'center',
   },
   contactItem: {
     flexDirection: 'row',
