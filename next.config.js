@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: [
+    'react-native',
+    'react-native-web',
+  ],
   webpack: (config) => {
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
@@ -13,13 +17,6 @@ const nextConfig = {
       ...config.resolve.extensions,
     ];
     return config;
-  },
-  experimental: {
-    turbo: {
-      resolveAlias: {
-        'react-native': 'react-native-web',
-      },
-    },
   },
 };
 
